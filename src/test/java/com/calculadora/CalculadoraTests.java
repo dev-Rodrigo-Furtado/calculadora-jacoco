@@ -1,86 +1,86 @@
 package com.calculadora;
 
-
-import com.jayway.jsonpath.internal.filter.ValueNodes;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import java .awt.event.FocusEvent;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class CalculadoraTests {
 
+    public Calculadora calc;
+
+    @BeforeEach
+    public void init(){
+        calc = spy(new Calculadora());
+    }
+
     @Test
     public void deveRetornarAreaDoTriangulo() throws LadosInvalidosException {
-        double valor_a=3;
-        double valor_b=4;
-        double valor_c=5;
-        Calculadora calc = new Calculadora();
-        double resultado = calc.areaTriangulo(valor_a,valor_b,valor_c);
+        double valor_a = 3;
+        double valor_b = 4;
+        double valor_c = 5;
+
+        double resultado = calc.areaTriangulo(valor_a, valor_b, valor_c);
         double esperado = 6;
-        Assertions.assertEquals(esperado,resultado);
+
+        assertEquals(esperado,resultado);
+        verify(calc, times(1)).isTriangulo(valor_a, valor_b, valor_c);
+        verify(calc, times(1)).semiPerimetro(valor_a, valor_b, valor_c);
     }
 
     @Test
     public void deveLancarLadosInvalidosException_quandoLadosNaoFormamUmTriangulo() throws LadosInvalidosException {
-        double valor_a=100;
-        double valor_b=4;
-        double valor_c=5;
-        Calculadora calc = new Calculadora();
-        Exception e = Assertions.assertThrows(LadosInvalidosException.class,() -> {calc.areaTriangulo(valor_a,valor_b,valor_c);});
+        double valor_a = 100;
+        double valor_b = 4;
+        double valor_c = 5;
+
+        assertThrows(LadosInvalidosException.class,() -> {calc.areaTriangulo(valor_a,valor_b,valor_c);});
     }
 
     @Test
     public void deveRetornarSemiperimetro() {
-        double valor_a=3;
-        double valor_b=4;
-        double valor_c=5;
-        Calculadora calc = new Calculadora();
+        double valor_a = 3;
+        double valor_b = 4;
+        double valor_c = 5;
+
         double resultado = calc.semiPerimetro(valor_a, valor_b, valor_c);
         double esperado = 6;
-        Assertions.assertEquals(esperado, resultado);
+        assertEquals(esperado, resultado);
+
 
     }
 
 
     @Test
     public void deveRetornarVerdadeiro_quandoLadosFormamUmTriangulo() {
-        double valor_a=3;
-        double valor_b=4;
-        double valor_c=5;
-        Calculadora calc = new Calculadora();
+        double valor_a = 3;
+        double valor_b = 4;
+        double valor_c = 5;
+
         Boolean resultado = calc.isTriangulo(valor_a, valor_b, valor_c);
-        Assertions.assertTrue(resultado);
+        assertTrue(resultado);
     }
 
-    @Test
-    public void deveRetornarFalso_quandoLadoAMaiorOuIgualSomaDosDemaisLados() {
-        double valor_a=10;
-        double valor_b=4;
-        double valor_c=5;
-        Calculadora calc = new Calculadora();
+
+    @ParameterizedTest(name = "Lado {0} maior")
+    @CsvSource({
+        "A, 10, 4, 5",
+        "B, 4, 10, 5",
+        "C, 3, 4, 7"
+
+    })
+    public void deveRetornarFalso_quandoUmLadosLadosAMaiorOuIgualSomaDosDemaisLados
+            (final String nomeTeste, final double valor_a, final double valor_b, final double valor_c ) {
         Boolean resultado = calc.isTriangulo(valor_a, valor_b, valor_c);
-        Assertions.assertFalse(resultado);
+        assertFalse(resultado);
+
     }
 
-    @Test
-    public void deveRetornarFalso_quandoLadoBMaiorOuIgualSomaDosDemaisLados() {
-        double valor_a=4;
-        double valor_b=10;
-        double valor_c=5;
-        Calculadora calc = new Calculadora();
-        Boolean resultado = calc.isTriangulo(valor_a, valor_b, valor_c);
-        Assertions.assertFalse(resultado);
-    }
-
-    @Test
-    public void deveRetornarFalso_quandoLadoCMaiorOuIgualSomaDosDemaisLados() {
-        double valor_a=3;
-        double valor_b=4;
-        double valor_c=7;
-        Calculadora calc = new Calculadora();
-        Boolean resultado = calc.isTriangulo(valor_a, valor_b, valor_c);
-        Assertions.assertFalse(resultado);
-    }
 }
